@@ -34,13 +34,13 @@ FUNCTION void write_nudata()
     {
       echoinput << "Begin writing data_echo.ss_new file" << endl;
       newdatfilename = "data_echo.ss_new";
-	  datinfostring = "echo_input_data";
+	    datinfostring = "echo_input_data";
     }
     else if (Nudat == 2)
     {
       echoinput << "Begin writing data_expval.ss file" << endl;
       newdatfilename = "data_expval.ss";
-	  datinfostring = "expected_values";
+	    datinfostring = "expected_values";
     }
     else // data_boot files
     {
@@ -60,8 +60,8 @@ FUNCTION void write_nudata()
       {
         newdatfilename = "data_boot_" + anystring2 + ".ss";
       }
-	  datinfostring = "  ";
-	  sprintf(datinfostring, "bootdata:_%d", Nudat);
+	    datinfostring = "bootstrap";
+//	    sprintf(datinfostring, "bootdata:_%d", Nudat);
     }
     anystring = ssnew_pathname + newdatfilename;
     report1.open(anystring);
@@ -80,7 +80,7 @@ FUNCTION void write_nudata()
     report1 << 12. * seasdur << " #_months/season" << endl;
     report1 << N_subseas << " #_Nsubseasons (even number, minimum is 2)" << endl;
     report1 << spawn_month << " #_spawn_month" << endl;
-    report1 << gender_rd << " #_Ngenders: 1, 2, -1  (use -1 for 1 sex setup with SSB multiplied by female_frac parameter)" << endl;
+    report1 << gender_rd << " #_Nsexes: 1, 2, -1  (use -1 for 1 sex setup with SSB multiplied by female_frac parameter)" << endl;
     report1 << nages << " #_Nages=accumulator age, first age is always age 0" << endl;
     report1 << pop << " #_Nareas" << endl;
     report1 << Nfleet << " #_Nfleets (including surveys)" << endl;
@@ -235,7 +235,7 @@ FUNCTION void write_nudata()
       {
         report1 << "#_mintailcomp: upper and lower distribution for females and males separately are accumulated until exceeding this level." << endl;
         report1 << "#_addtocomp:  after accumulation of tails; this value added to all bins" << endl;
-        report1 << "#_combM+F: males and females treated as combined gender below this bin number " << endl;
+        report1 << "#_combM+F: males and females treated as combined sex below this bin number " << endl;
         report1 << "#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation" << endl;
         report1 << "#_Comp_Error:  0=multinomial, 1=dirichlet using Theta*n, 2=dirichlet using beta, 3=MV_Tweedie" << endl;
         report1 << "#_ParmSelect:  consecutive index for dirichlet or MV_Tweedie" << endl;
@@ -300,7 +300,7 @@ FUNCTION void write_nudata()
 
       report1 << "#_mintailcomp: upper and lower distribution for females and males separately are accumulated until exceeding this level." << endl;
       report1 << "#_addtocomp:  after accumulation of tails; this value added to all bins" << endl;
-      report1 << "#_combM+F: males and females treated as combined gender below this bin number " << endl;
+      report1 << "#_combM+F: males and females treated as combined sex below this bin number " << endl;
       report1 << "#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation" << endl;
       report1 << "#_Comp_Error:  0=multinomial, 1=dirichlet using Theta*n, 2=dirichlet using beta, 3=MV_Tweedie" << endl;
       report1 << "#_ParmSelect:  consecutive index for dirichlet or MV_Tweedie" << endl;
@@ -403,7 +403,7 @@ FUNCTION void write_nudata()
                 << "#Note: negative value for first bin makes it accumulate all smaller fish vs. truncate small fish" << endl;
         for (i = 1; i <= SzFreq_Nmeth; i++)
         { report1 << SzFreq_Omit_Small(i) * SzFreq_bins1(i, 1) << SzFreq_bins1(i)(2, SzFreq_Nbins(i)) << endl; }
-        report1 << "#_method year month fleet gender partition SampleSize <data> " << endl << SzFreq_obs1 << endl;
+        report1 << "#_method year month fleet sex partition SampleSize <data> " << endl << SzFreq_obs1 << endl;
       }
 
       // begin tagging data section #1 (observed data)
@@ -427,7 +427,7 @@ FUNCTION void write_nudata()
 
         // tag releases
         report1 << "# Release data for each tag group.  Tags are considered to be released at the beginning of a season (period)" << endl;
-        report1 << "#<TG> area yr season <tfill> gender age Nrelease  (note that the TG and tfill values are placeholders and are replaced by program generated values)" << endl;
+        report1 << "#<TG> area yr season <tfill> sex age Nrelease  (note that the TG and tfill values are placeholders and are replaced by program generated values)" << endl;
         report1 << TG_release << endl;
 
         // tag recaptures
@@ -616,7 +616,7 @@ FUNCTION void write_nudata()
       {
         report1 << "#_mintailcomp: upper and lower distribution for females and males separately are accumulated until exceeding this level." << endl;
         report1 << "#_addtocomp:  after accumulation of tails; this value added to all bins" << endl;
-        report1 << "#_combM+F: males and females treated as combined gender below this bin number " << endl;
+        report1 << "#_combM+F: males and females treated as combined sex below this bin number " << endl;
         report1 << "#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation" << endl;
         report1 << "#_Comp_Error:  0=multinomial, 1=dirichlet using Theta*n, 2=dirichlet using beta, 3=MV_Tweedie" << endl;
         report1 << "#_ParmSelect:  consecutive index for dirichlet or MV_Tweedie" << endl;
@@ -685,7 +685,7 @@ FUNCTION void write_nudata()
 
       report1 << "#_mintailcomp: upper and lower distribution for females and males separately are accumulated until exceeding this level." << endl;
       report1 << "#_addtocomp:  after accumulation of tails; this value added to all bins" << endl;
-      report1 << "#_combM+F: males and females treated as combined gender below this bin number " << endl;
+      report1 << "#_combM+F: males and females treated as combined sex below this bin number " << endl;
       report1 << "#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation" << endl;
       report1 << "#_Comp_Error:  0=multinomial, 1=dirichlet using Theta*n, 2=dirichlet using beta, 3=MV_Tweedie" << endl;
       report1 << "#_ParmSelect:  parm number for dirichlet or MV_Tweedie" << endl;
@@ -805,7 +805,7 @@ FUNCTION void write_nudata()
                 << "#Note: negative value for first bin makes it accumulate all smaller fish vs. truncate small fish" << endl;
         for (i = 1; i <= SzFreq_Nmeth; i++)
         { report1 << SzFreq_Omit_Small(i) * SzFreq_bins1(i, 1) << SzFreq_bins1(i)(2, SzFreq_Nbins(i)) << endl; }
-        report1 << "#_method year month fleet gender partition SampleSize <data> " << endl << SzFreq_obs1 << endl;
+        report1 << "#_method year month fleet sex partition SampleSize <data> " << endl << SzFreq_obs1 << endl;
       }
 
       // begin tagging data section #2 (expected values)
@@ -1063,7 +1063,7 @@ FUNCTION void write_nudata()
       {
         report1 << "#_mintailcomp: upper and lower distribution for females and males separately are accumulated until exceeding this level." << endl;
         report1 << "#_addtocomp:  after accumulation of tails; this value added to all bins" << endl;
-        report1 << "#_combM+F: males and females treated as combined gender below this bin number " << endl;
+        report1 << "#_combM+F: males and females treated as combined sex below this bin number " << endl;
         report1 << "#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation" << endl;
         report1 << "#_Comp_Error:  0=multinomial, 1=dirichlet using Theta*n, 2=dirichlet using beta, 3=MV_Tweedie" << endl;
         report1 << "#_ParmSelect:  consecutive index for dirichlet or MV_Tweedie" << endl;
@@ -1165,7 +1165,7 @@ FUNCTION void write_nudata()
 
       report1 << "#_mintailcomp: upper and lower distribution for females and males separately are accumulated until exceeding this level." << endl;
       report1 << "#_addtocomp:  after accumulation of tails; this value added to all bins" << endl;
-      report1 << "#_combM+F: males and females treated as combined gender below this bin number " << endl;
+      report1 << "#_combM+F: males and females treated as combined sex below this bin number " << endl;
       report1 << "#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation" << endl;
       report1 << "#_Comp_Error:  0=multinomial, 1=dirichlet using Theta*n, 2=dirichlet using beta, 3=MV_Tweedie" << endl;
         report1 << "#_ParmSelect:  consecutive index for dirichlet or MV_Tweedie" << endl;
@@ -1318,7 +1318,7 @@ FUNCTION void write_nudata()
                 << "#Note: negative value for first bin makes it accumulate all smaller fish vs. truncate small fish" << endl;
         for (i = 1; i <= SzFreq_Nmeth; i++)
         { report1 << SzFreq_Omit_Small(i) * SzFreq_bins1(i, 1) << SzFreq_bins1(i)(2, SzFreq_Nbins(i)) << endl; }
-        report1 << "#_method year month fleet gender partition SampleSize <data> " << endl << SzFreq_obs1 << endl;
+        report1 << "#_method year month fleet sex partition SampleSize <data> " << endl << SzFreq_obs1 << endl;
       }
 
       // begin tagging data section #3 (bootstrap data)
@@ -1445,7 +1445,7 @@ FUNCTION void write_nucontrol()
   NuStart << datfilename << endl
           << ctlfilename << endl;
   NuStart << readparfile << " # 0=use init values in control file; 1=use ss.par" << endl;
-  NuStart << rundetail << " # run display detail (0,1,2)" << endl;
+  NuStart << rundetail << " # run display detail (0 = minimal; 1=one line per iter; 2=each logL)" << endl;
   NuStart << reportdetail << " # detailed output (0=minimal for data-limited, 1=high (w/ wtatage.ss_new), 2=brief, 3=custom) " << endl;
   if (reportdetail == 3)
   {
@@ -1457,7 +1457,7 @@ FUNCTION void write_nucontrol()
   }
   else
   {
-    NuStart << "# custom report options: -100 to start with minimal; -101 to start with all; -number to remove, +number to add, -999 to end" << endl;
+    NuStart << "#COND: custom report options: -100 to start with minimal; -101 to start with all; -number to remove, +number to add, -999 to end" << endl;
   }
 
   NuStart << docheckup << " # write 1st iteration details to echoinput.sso file (0,1) " << endl;
@@ -1475,7 +1475,7 @@ FUNCTION void write_nucontrol()
   NuStart << STD_Yr_min_rd << " # min yr for sdreport outputs (-1 for styr); #_" << STD_Yr_min << endl;
   NuStart << STD_Yr_max_rd << " # max yr for sdreport outputs (-1 for endyr+1; -2 for endyr+Nforecastyrs); #_" << STD_Yr_max << endl;
   NuStart << N_STD_Yr_RD << " # N individual STD years " << endl;
-  NuStart << "#vector of year values " << endl
+  NuStart << "#COND: vector of year values if N>0" << endl
           << STD_Yr_RD << endl;
 
   NuStart << final_conv << " # final convergence criteria (e.g. 1.0e-04) " << endl;
@@ -1484,18 +1484,18 @@ FUNCTION void write_nucontrol()
   NuStart << depletion_basis_rd << " # Depletion basis:  denom is: 0=skip; 1=X*SPBvirgin; 2=X*SPBmsy; 3=X*SPB_styr; 4=X*SPB_endyr; 5=X*dyn_Bzero;  values>=11 invoke N multiyr (up to 9!) with 10's digit; >100 invokes log(ratio)" << endl;
   NuStart << depletion_level << " # Fraction (X) for Depletion denominator (e.g. 0.4)" << endl;
   NuStart << SPR_reporting << " # SPR_report_basis:  0=skip; 1=(1-SPR)/(1-SPR_tgt); 2=(1-SPR)/(1-SPR_MSY); 3=(1-SPR)/(1-SPR_Btarget); 4=rawSPR" << endl;
-  NuStart << F_reporting << " # F_reporting_units: 0=skip; 1=exploitation(Bio); 2=exploitation(Num); 3=sum(Apical_F's); 4=true F for range of ages; 5=unweighted avg. F for range of ages" << endl;
+  NuStart << F_reporting << " # F_std_reporting_units: 0=skip; 1=exploitation(Bio); 2=exploitation(Num); 3=sum(Apical_F's); 4=mean F for range of ages (numbers weighted); 5=unweighted mean F for range of ages" << endl;
   if (F_reporting == 4 || F_reporting == 5)
   {
-    NuStart << F_reporting_ages << " #_min and max age over which average F will be calculated, with F=Z-M" << endl;
+    NuStart << F_reporting_ages << " # min and max age over which mean F will be calculated, with F=Z-M" << endl;
   }
   else
   {
-    NuStart << "#COND 10 15 #_min and max age over which average F will be calculated with F_reporting=4 or 5" << endl;
+    NuStart << "#COND 10 15 #_min and max age over which mean F will be calculated with F_reporting=4 or 5" << endl;
   }
-  NuStart << F_std_basis_rd << " # F_std_basis: 0=raw_annual_F; 1=F/Fspr; 2=F/Fmsy; 3=F/Fbtgt; where F means annual_F; values >=11 invoke N multiyr (up to 9!) with 10's digit; >100 invokes log(ratio)" << endl;
+  NuStart << F_std_basis_rd << " # F_std_scaling: 0=no scaling; 1=F/Fspr; 2=F/Fmsy; 3=F/Fbtgt; where F means annual F_std, Fmsy means F_std@msy; values >=11 invoke N multiyr (up to 9!) using 10's digit; >100 invokes log(ratio)" << endl;
   NuStart << double(mcmc_output_detail) + MCMC_bump << " # MCMC output detail: integer part (0=default; 1=adds obj func components; 2= +write_report_for_each_mceval); and decimal part (added to SR_LN(R0) on first call to mcmc)" << endl;
-  NuStart << ALK_tolerance << " # ALK tolerance ***disabled in code (example 0.0001)" << endl;
+  NuStart << ALK_tolerance << " # ALK tolerance ***disabled in code" << endl;
   NuStart << irand_seed_rd << " # random number seed for bootstrap data (-1 to use long(time) as seed): # " << irand_seed << endl;
   NuStart << "3.30 # check value for end of file and for version control" << endl;
   NuStart.close();
@@ -1537,10 +1537,40 @@ FUNCTION void write_nucontrol()
   NuFore << "# where none and simple require no input after this line; simple sets forecast F same as end year F" << endl;
   NuFore << N_Fcast_Yrs << " # N forecast years " << endl;
   NuFore << Fcast_Flevel << " # Fmult (only used for Do_Forecast==5) such that apical_F(f)=Fmult*relF(f)" << endl;
-  NuFore << "#_Fcast_years:  beg_selex, end_selex, beg_relF, end_relF, beg_mean recruits, end_recruits  (enter actual year, or values of 0 or -integer to be rel. endyr)" << endl
+  anystring = "";
+  if(Fcast_yr_rd(1) != -12345)
+  {   //  write in old format
+    NuFore << "#_Fcast_years for averaging:  beg_selex, end_selex, beg_relF, end_relF, beg_mean recruits, end_recruits  (enter actual year, or values of 0 or -integer to be rel. endyr)" << endl
          << Fcast_yr_rd << endl
          << "# " << Fcast_yr << endl;
-  NuFore << Fcast_Specify_Selex << " # Forecast selectivity (0=fcast selex is mean from year range; 1=fcast selectivity from annual time-vary parms)" << endl;
+    NuFore << Fcast_timevary_Selex_rd << " # Forecast selectivity (0=fcast selex is mean from year range; 1=fcast selectivity from time-vary parms). NOTE: logic reverses in new format" << endl;
+    //  
+    NuFore << "# A revised protocol for the Fcast_yr specification is available and recommended. Template is below." << endl;
+          warnstream << "A revised protocol for the Fcast_yr specification is available and recommended.";
+          write_message (NOTE, 1);
+    anystring = "#";
+  }
+//  else
+  {  //  new list based format for Fcast years
+  NuFore << anystring << endl << anystring << "-12345  # code to invoke new format for expanded fcast year controls" << endl
+         << "# biology and selectivity vectors are updated annually in the forecast according to timevary parameters, so check end year of blocks and dev vectors" << endl
+         << "# input in this section directs creation of means over historical years to override any time_vary changes" << endl
+				 << "# Factors implemented so far: 1=M, 4=recr_dist, 5=migration, 10=selectivity, 11=rel_F, 12=recruitment" << endl
+         << "# rel_F and Recruitment also have additional controls later in forecast.ss" << endl
+         << "# input as list: Factor, method (0, 1), st_yr, end_yr" << endl
+         << "# Terminate with -9999 for Factor" << endl
+         << "# st_yr and end_yr input can be actual year; <=0 sets rel. to timeseries endyr; Except -999 for st_yr sets to first year if time series" << endl
+//				 << "#_Factor: 1=M, 2=growth, 3=wtlen, 4=recr_dist&femfrac, 5=migration, 6=ageerror, 7=catchmult, 8=hermaphroditism" << endl
+         << "# Method = 0 (or omitted) continue using time_vary parms; 1  use mean of derived factor over specified year range"<<endl;
+    NuFore << "# Factor method st_yr end_yr " << endl;
+    for (int i = 1; i <= 12; i++)
+    if (Fcast_MGparm_ave_rd(i, 1) > 0)
+	  {
+      NuFore << anystring << Fcast_MGparm_ave_rd(i) << " # " << MGtype_Lbl(i) << "; use: "  << Fcast_MGparm_ave(i) << endl;
+    }
+
+    NuFore << anystring << "-9999 0 0 0" << endl << "#" <<endl;
+  }
 
   NuFore << HarvestPolicy << " # Control rule method (0: none; 1: ramp does catch=f(SSB), buffer on F; 2: ramp does F=f(SSB), buffer on F; 3: ramp does catch=f(SSB), buffer on catch; 4: ramp does F=f(SSB), buffer on catch) " << endl;
   NuFore << "# values for top, bottom and buffer exist, but not used when Policy=0" << endl;
@@ -1556,63 +1586,21 @@ FUNCTION void write_nucontrol()
     }
   }
 
-  NuFore << Fcast_Loop_Control(1) << " #_N forecast loops (1=OFL only; 2=ABC; 3=get F from forecast ABC catch with allocations applied)" << endl;
-  NuFore << Fcast_Loop_Control(2) << " #_First forecast loop with stochastic recruitment" << endl;
-  NuFore << Fcast_Loop_Control(3) << " #_Forecast recruitment:  0= spawn_recr; 1=value*spawn_recr_fxn; 2=value*VirginRecr; 3=recent mean for recr and recr_dist from yr range above; 4=average for recr only" << endl;
-  NuFore << "#_ for options 3 and 4, need to set phase to -1 in control to get constant recruitment in MCMC" << endl;
+  NuFore << "#" << endl << Fcast_Loop_Control(1) << " #_N forecast loops (1=OFL only; 2=ABC; 3=get F from forecast ABC catch with allocations applied)" << endl;
+  NuFore << Fcast_Loop_Control(2) << " # First forecast loop with stochastic recruitment" << endl;
+  NuFore << Fcast_Loop_Control(3) << " # Forecast base recruitment:  0= spawn_recr; 1=mult*spawn_recr_fxn; 2=mult*VirginRecr; 3=deprecated; 4=mult*mean_over_yr_range" << endl;
+  NuFore << "# for option 4, set phase for fore_recr_devs to -1 in control to get constant mean in MCMC, else devs will be applied" << endl;
   if (Fcast_Loop_Control(3) == 0)
   {
     NuFore << 1.0 << " # Value multiplier is ignored" << endl;
   }
-  else if (Fcast_Loop_Control(3) == 1)
-  {
-    NuFore << Fcast_Loop_Control(4) << " # value is multiplier of SRR " << endl;
-  }
-  else if (Fcast_Loop_Control(3) == 2)
-  {
-    NuFore << Fcast_Loop_Control(4) << " # value is multiplier on virgin recr" << endl;
-  }
-  else if (Fcast_Loop_Control(3) >= 3)
-  {
-    NuFore << Fcast_Loop_Control(4) << " # Value multiplier is ignored" << endl;
-  }
   else
   {
-    NuFore << "0 # # Value multiplier is ignored " << endl;
+    NuFore << Fcast_Loop_Control(4) << " # multiplier on base recruitment " << endl;
   }
-  NuFore << Fcast_Loop_Control(5) << " #_Fcast_MGvector_averaging: 0 = not, 1 = do" << endl;
-  NuFore << "#_read list of MG_type, method (1, 2), start year, end year" << endl
-         << "#_Terminate with -9999 for MG_type" << endl
-//				 << "#_MG_type: 1=M, 2=growth, 3=wtlen, 4=recr_dist&femfrac, 5=migration, 6=ageerror, 7=catchmult, 8=hermaphroditism" << endl
-				 << "#_MG_type: 1=M, 4=recr_dist, 5=migration" << endl
-         << "#_Method = 0 (default) means continue time_vary parms; 1 means to use average of derived biology; 2 (future) means average parameter then apply as if time-vary"<<endl;
+  NuFore << Fcast_Loop_Control(5) << " # not used" << endl << "#" << endl;
 
-  if (Fcast_Loop_Control(5) == 1)
-  {
-    NuFore << "# MG_type method st_year end_year " << endl;
-    for (int i = 1; i <= 8; i++)
-    if (Fcast_MGparm_ave_rd(i, 1) > 0)
-	  {
-      NuFore << Fcast_MGparm_ave_rd(i);
-      if (Fcast_MGparm_ave_rd(i, 1) == 1) NuFore << " # (M) NatMort " << endl;
-      else if (Fcast_MGparm_ave_rd(i, 1) == 2) NuFore << " # Growth " << endl;
-      else if (Fcast_MGparm_ave_rd(i, 1) == 3) NuFore << " # Wt/Len " << endl;
-      else if (Fcast_MGparm_ave_rd(i, 1) == 4) NuFore << " # RecrDist " << endl;  //  frac_female may be added later
-      else if (Fcast_MGparm_ave_rd(i, 1) == 5) NuFore << " # Migration " << endl;
-      else if (Fcast_MGparm_ave_rd(i, 1) == 6) NuFore << " # Age Error " << endl;
-      else if (Fcast_MGparm_ave_rd(i, 1) == 7) NuFore << " # CatchMult " << endl;
-      else if (Fcast_MGparm_ave_rd(i, 1) == 8) NuFore << " # Hermaphroditism " << endl;
-      else if (Fcast_MGparm_ave_rd(i, 1) == 9) NuFore << " # Maturity&Fecundity " << endl;
-    }
-    NuFore << "-9999 -1 -1 -1" << endl;
-  }
-  else
-  {
-    NuFore << "#COND_1: list MG_type, start year, end year and terminate with MG_type = -9999" << endl;
-	NuFore << "#COND_1: Where MG_type: 1=M, 2=growth, 3=wtlen, 4=recr_dist&femfrac, 5=migration, 6=ageerror, 7=catchmult, 8=hermaphroditism, 9=maturity&fecundity" << endl;
-	NuFore << "#C_  Note: not all options are implemented. " << endl;
-  }
-  NuFore << Fcast_Cap_FirstYear << "  #FirstYear for caps and allocations (should be after years with fixed inputs) " << endl;
+  NuFore << Fcast_Cap_FirstYear << "  # FirstYear for caps and allocations (should be after years with fixed inputs) " << endl;
 
   NuFore << Impl_Error_Std << " # stddev of log(realized catch/target catch) in forecast (set value>0.0 to cause active impl_error)" << endl;
 
@@ -1620,8 +1608,8 @@ FUNCTION void write_nucontrol()
   NuFore << Rebuild_Ydecl << " # Rebuilder:  first year catch could have been set to zero (Ydecl)(-1 to set to 1999)" << endl;
   NuFore << Rebuild_Yinit << " # Rebuilder:  year for current age structure (Yinit) (-1 to set to endyear+1)" << endl;
 
-  NuFore << Fcast_RelF_Basis << " # fleet relative F:  1=use first-last alloc year; 2=read seas, fleet, alloc list below" << endl;
-  NuFore << "# Note that fleet allocation is used directly as average F if Do_Forecast=4 " << endl;
+  NuFore << Fcast_RelF_Basis << " # fleet relative F:  1=use mean over year range; 2=read seas, fleet, alloc list below" << endl;
+  NuFore << "# Note that fleet allocation values is used directly as F if Do_Forecast=4 " << endl;
 
   NuFore << Fcast_Catch_Basis << " # basis for fcast catch tuning and for fcast catch caps and allocation  (2=deadbio; 3=retainbio; 5=deadnum; 6=retainnum); NOTE: same units for all fleets" << endl;
 
@@ -1839,8 +1827,8 @@ FUNCTION void write_nucontrol()
   report4 << Grow_type << " # GrowthModel: 1=vonBert with L1&L2; 2=Richards with L1&L2; 3=age_specific_K_incr; 4=age_specific_K_decr; 5=age_specific_K_each; 6=NA; 7=NA; 8=growth cessation" << endl;
   if (Grow_type <= 5 || Grow_type == 8)
   {
-    report4 << AFIX << " #_Age(post-settlement)_for_L1;linear growth below this" << endl
-            << AFIX2 << " #_Growth_Age_for_L2 (999 to use as Linf)" << endl
+    report4 << AFIX << " #_Age(post-settlement) for L1 (aka Amin); first growth parameter is size at this age; linear growth below this" << endl
+            << AFIX2 << " #_Age(post-settlement) for L2 (aka Amax); 999 to treat as Linf" << endl
             << Linf_decay << " #_exponential decay for growth above maxage (value should approx initial Z; -999 replicates 3.24; -998 to not allow growth above maxage)" << endl;
     report4 << "0  #_placeholder for future growth feature" << endl;
     if (Grow_type >= 3 && Grow_type <= 5)
@@ -2116,7 +2104,7 @@ FUNCTION void write_nucontrol()
   }
 
   report4 << do_recdev << " #do_recdev:  0=none; 1=devvector (R=F(SSB)+dev); 2=deviations (R=F(SSB)+dev); 3=deviations (R=R0*dev; dev2=R-f(SSB)); 4=like 3 with sum(dev2) adding penalty" << endl;
-  report4 << recdev_start << " # first year of main recr_devs; early devs can preceed this era" << endl;
+  report4 << recdev_start << " # first year of main recr_devs; early devs can precede this era" << endl;
   report4 << recdev_end << " # last year of main recr_devs; forecast devs start in following year" << endl;
   report4 << recdev_PH_rd << " #_recdev phase " << endl;
   report4 << recdev_adv << " # (0/1) to read 13 advanced options" << endl;
@@ -2410,7 +2398,7 @@ FUNCTION void write_nucontrol()
   report4 << "#Pattern:_11; parm=2; selex=1.0  for specified min-max population length bin range" << endl;
   report4 << "#Pattern:_15; parm=0; mirror another age or length selex" << endl;
   report4 << "#Pattern:_6;  parm=2+special; non-parm len selex" << endl;
-  report4 << "#Pattern:_43; parm=2+special+2;  like 6, with 2 additional param for scaling (average over bin range)" << endl;
+  report4 << "#Pattern:_43; parm=2+special+2;  like 6, with 2 additional param for scaling (mean over bin range)" << endl;
   report4 << "#Pattern:_8;  parm=8; double_logistic with smooth transitions and constant above Linf option" << endl;
   report4 << "#Pattern:_9;  parm=6; simple 4-parm double logistic with starting length; parm 5 is first length; parm 6=1 does desc as offset" << endl;
   report4 << "#Pattern:_21; parm=2+special; non-parm len selex, read as pairs of size, then selex" << endl;
@@ -2420,7 +2408,7 @@ FUNCTION void write_nucontrol()
   report4 << "#Pattern:_2;  parm=6; double_normal with sel(minL) and sel(maxL), using joiners, back compatibile version of 24 with 3.30.18 and older" << endl;
   report4 << "#Pattern:_25; parm=3; exponential-logistic in length" << endl;
   report4 << "#Pattern:_27; parm=special+3; cubic spline in length; parm1==1 resets knots; parm1==2 resets all " << endl;
-  report4 << "#Pattern:_42; parm=special+3+2; cubic spline; like 27, with 2 additional param for scaling (average over bin range)" << endl;
+  report4 << "#Pattern:_42; parm=special+3+2; cubic spline; like 27, with 2 additional param for scaling (mean over bin range)" << endl;
 
   report4 << "#_discard_options:_0=none;_1=define_retention;_2=retention&mortality;_3=all_discarded_dead;_4=define_dome-shaped_retention" << endl;
   report4 << "#_Pattern Discard Male Special" << endl;
@@ -2438,13 +2426,13 @@ FUNCTION void write_nucontrol()
   report4 << "#Pattern:_15; parm=0; mirror another age or length selex" << endl;
   report4 << "#Pattern:_16; parm=2; Coleraine - Gaussian" << endl;
   report4 << "#Pattern:_17; parm=nages+1; empirical as random walk  N parameters to read can be overridden by setting special to non-zero" << endl;
-  report4 << "#Pattern:_41; parm=2+nages+1; // like 17, with 2 additional param for scaling (average over bin range)" << endl;
+  report4 << "#Pattern:_41; parm=2+nages+1; // like 17, with 2 additional param for scaling (mean over bin range)" << endl;
   report4 << "#Pattern:_18; parm=8; double logistic - smooth transition" << endl;
   report4 << "#Pattern:_19; parm=6; simple 4-parm double logistic with starting age" << endl;
   report4 << "#Pattern:_20; parm=6; double_normal,using joiners" << endl;
   report4 << "#Pattern:_26; parm=3; exponential-logistic in age" << endl;
   report4 << "#Pattern:_27; parm=3+special; cubic spline in age; parm1==1 resets knots; parm1==2 resets all " << endl;
-  report4 << "#Pattern:_42; parm=2+special+3; // cubic spline; with 2 additional param for scaling (average over bin range)" << endl;
+  report4 << "#Pattern:_42; parm=2+special+3; // cubic spline; with 2 additional param for scaling (mean over bin range)" << endl;
   report4 << "#Age patterns entered with value >100 create Min_selage from first digit and pattern from remainder" << endl;
   report4 << "#_Pattern Discard Male Special" << endl;
   for (f = 1; f <= Nfleet; f++)
@@ -2527,7 +2515,7 @@ FUNCTION void write_nucontrol()
     }
 
     report4 << "#" << endl
-            << TwoD_AR_do << "   #  use 2D_AR1 selectivity(0/1)" << endl;
+            << TwoD_AR_do << "   #  use 2D_AR1 selectivity? (0/1)" << endl;
     if (TwoD_AR_do > 0)
     {
       k = timevary_parm_start_sel + N_selparm3 - N_selparm - 1; //  starting point in timevary_parm_rd
@@ -2549,7 +2537,7 @@ FUNCTION void write_nucontrol()
           anystring = "AGE";
         }
 
-        report4 << tempvec(1, 11) << "  #  2d_AR specs for fleet: " << fleetname(tempvec(1)) << " " << anystring << endl;
+        report4 << tempvec(1, 11) << "  #  2D_AR specs for fleet: " << fleetname(tempvec(1)) << " " << anystring << endl;
         int sigma_amax = tempvec(6);
         int use_rho = tempvec(7);
         int amin = tempvec(4);
@@ -2577,6 +2565,10 @@ FUNCTION void write_nucontrol()
     else
     {
       report4 << "#_no 2D_AR1 selex offset used" << endl;
+      report4 << "#_specs:  fleet, ymin, ymax, amin, amax, sigma_amax, use_rho, len1/age2, devphase, before_range, after_range" << endl;
+      report4 << "#_sigma_amax>amin means create sigma parm for each bin from min to sigma_amax; sigma_amax<0 means just one sigma parm is read and used for all bins" << endl;
+      report4 << "#_needed parameters follow each fleet's specifications"<<endl;
+      report4 << "# -9999  0 0 0 0 0 0 0 0 0 0 # terminator" << endl;
     }
 
     report4.unsetf(std::ios_base::fixed);

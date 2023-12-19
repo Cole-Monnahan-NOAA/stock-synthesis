@@ -252,11 +252,14 @@ FUNCTION void apply_recdev(prevariable& NewRecruits, const prevariable& Recr_vir
           NewRecruits += exp_rec(j, 4);
         }
         NewRecruits /= (Fcast_Rec_yr2 - Fcast_Rec_yr1 + 1);
+        if(Fcast_Loop_Control(3) == 4) NewRecruits *= Fcast_Loop_Control(4);  //  apply multiplier
         exp_rec(y, 2) = NewRecruits;
         exp_rec(y, 3) = NewRecruits; //  store in the bias-adjusted field
         break;
       }
     }
+  // note that if user requests "mean" as base forecast recr, then devs are still applied
+  // so, phase for forecast recdevs must be <0 to assure that forecast recr do not get added variability
     if (do_recdev > 0)
       NewRecruits *= mfexp(Fcast_recruitments(y)); //  recruitment deviation
   }

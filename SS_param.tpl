@@ -338,6 +338,8 @@ PARAMETER_SECTION
   matrix annual_catch(styr-1,YrMax,1,6)  //  same six as above
   matrix annual_F(styr-1,YrMax,1,3)  //  1=sum of hrate (if Pope fmethod) or sum hrate*seasdur if F; 2=Z-M for selected ages; 3=M
   3darray equ_catch_fleet(1,6,1,nseas,1,Nfleet)
+  matrix vuln_bio(styr-3*nseas,k,1,Nfleet)  //  biomass selected by each fleet
+  matrix vuln_num(styr-3*nseas,k,1,Nfleet)  //  numbers selected by each fleet
 
   matrix fec(1,gmorph,0,nages)            //relative fecundity at age, is the maturity times the weight-at-age times eggs/kg for females
   matrix make_mature_bio(1,gmorph,0,nages)  //  mature female weight at age
@@ -482,7 +484,7 @@ PARAMETER_SECTION
   init_bounded_vector_vector parm_dev(1,N_parm_dev,parm_dev_minyr,parm_dev_maxyr,-10,10,parm_dev_PH)
   matrix parm_dev_rwalk(1,N_parm_dev,parm_dev_minyr,parm_dev_maxyr);
 
-  init_bounded_number checksum999(998,1000,-999)  //  set value to 999 to check reading of ss.par
+  init_bounded_number checksum999(998,1000,-1)  //  value must be 999 to check reading of ss.par
   vector timevary_parm(1,timevary_parm_cnt);  //  holds the link parameters; in SS_timevaryparm these are set to actual parms in MGparms, SRparms, Qparms, selparms
   matrix parm_timevary(1,timevary_cnt,styr-1,YrMax);  //  time series of adjusted parm values for block and trend
 

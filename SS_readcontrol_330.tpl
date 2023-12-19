@@ -683,18 +683,29 @@
     Nblk2 = Nblk + Nblk;
     Block_Design.deallocate();
     Block_Design.allocate(1, N_Block_Designs, 1, Nblk2);
+    bool endyrChk = false;
     for (j = 1; j <= N_Block_Designs; j++)
     {
       *(ad_comm::global_datafile) >> Block_Design(j)(1, Nblk2(j));
-      echoinput << " block design #: " << j << "  read year pairs: " << Block_Design(j) << endl;
       a = -1;
       for (k = 1; k <= Nblk(j); k++)
       {
         a += 2;
-        if (Block_Design(j, a + 1) < Block_Design(j, a))
+        b = a + 1;
+        if (Block_Design(j, b) == -1)
         {
-          warnstream << "Block:" << j << " " << k << " ends before it starts; fatal error";
-          write_message (FATAL, 0); // EXIT!
+          Block_Design(j, b) = endyr;
+        }
+        else if (Block_Design(j, b) == -2)
+        {
+          Block_Design(j, b) = YrMax;
+        }
+        // check block year values
+        if (Block_Design(j, b) > YrMax)
+        {
+          warnstream << "Block:" << j << " " << k << " ends in: " << Block_Design(j, a + 1) << " reset to YrMax:  " << YrMax;
+          write_message (ADJUST, 0);
+          Block_Design(j, b) = YrMax;
         }
         if (Block_Design(j, a) < styr - 1)
         {
@@ -702,7 +713,12 @@
           write_message (ADJUST, 0);
           Block_Design(j, a) = styr;
         }
-        if (Block_Design(j, a + 1) < styr - 1)
+        if (Block_Design(j, b) < Block_Design(j, a))
+        {
+          warnstream << "Block:" << j << " " << k << " ends before it starts; fatal error";
+          write_message (FATAL, 0); // EXIT!
+        }
+        if (Block_Design(j, b) < styr - 1)
         {
           warnstream << "Block:" << j << " " << k << " ends before styr; fatal error";
           write_message (FATAL, 1); // EXIT!
@@ -712,7 +728,7 @@
           warnstream << "Block:" << j << " " << k << " starts after retroyr+1; should not estimate ";
           write_message (WARN, 0);
         }
-        if (Block_Design(j, a + 1) > retro_yr + 1)
+        if (Block_Design(j, b) > retro_yr + 1)
         {
           warnstream << "Block:" << j << " " << k << " ends in: " << Block_Design(j, a + 1) << " after retroyr+1:  " << retro_yr + 1;
           write_message (WARN, 0);
@@ -722,13 +738,17 @@
           warnstream << "Block:" << j << " " << k << " starts in: " << Block_Design(j, a + 1) << " which is > YrMax:  " << YrMax << " fatal error";
           write_message (FATAL, 0); // EXIT!
         }
-        if (Block_Design(j, a + 1) > YrMax)
+        if (Block_Design(j, b) == endyr)
         {
-          warnstream << "Block:" << j << " " << k << " ends in: " << Block_Design(j, a + 1) << " reset to YrMax:  " << YrMax;
-          write_message (WARN, 0);
-          Block_Design(j, a + 1) = YrMax;
+          endyrChk = true;
         }
       }
+      echoinput << " block design #: " << j << "  read year pairs: " << Block_Design(j) << endl;
+    }
+    if (endyrChk == true)
+    {
+      warnstream << "At least one block pattern ends in endyr. Check the output parameter value time series to see if the values in forecast years are as intended.";
+      write_message (WARN, 0);
     }
   }
   else
@@ -1573,6 +1593,7 @@
  END_CALCS
 
   ivector mgp_type(1,N_MGparm)  //  contains category to parameter (1=natmort; 2=growth; 3=wtlen & fec; 4=recr_dist&femfrac; 5=movement; 6=ageerrorkey; 7=catchmult)
+  //  labels for the types are found in:  MGtype_Lbl
  LOCAL_CALCS
       // clang-format on
       gp = 0;
@@ -1617,8 +1638,8 @@
   if (catch_mult_pointer > 0) mgp_type(catch_mult_pointer, N_MGparm) = 7;
   for (f = frac_female_pointer; f <= frac_female_pointer + N_GP - 1; f++) mgp_type(f) = 4;
   if (N_pred > 0) mgp_type(predparm_pointer(1), predparm_pointer(1) + N_predparms - 1) = 1;
-  echoinput << "mgparm_type for each parm: 1=M; 2=growth; 3=wtlen,mat,fec,hermo; 4=recr&femfrac; 5=migr; 6=ageerror; 7=catchmult" << endl
-            << mgp_type << endl;
+  echoinput << "mgparm_type for each parm:"<<endl;
+  for (f = 1; f<= N_MGparm; f++) echoinput << f << " " << MGtype_Lbl(mgp_type(f)) << endl;
   // clang-format off
  END_CALCS
 
@@ -1718,10 +1739,11 @@
         env_data_pass(1) = env_data_minyr(k);
         env_data_pass(2) = env_data_maxyr(k);
       }
-      else //  density-dependence
+      else if (abs(MGparm_1(j, 8) > 0)) //  density-dependence
       {
         timevary_setup(7) = -int(abs(MGparm_1(j, 8)) - k * 100);
         do_densitydependent = 1;
+  echoinput << "Density-dependent flag for MGparms " << do_densitydependent << " MGparm: " << j << endl;
         k = 0;
         env_data_pass.initialize();
       }
@@ -1785,6 +1807,20 @@
   
     echoinput << y << " timevary_MG: " << timevary_MG(y) << endl;
   }
+
+  for (y = endyr + 1; y <= YrMax; y++)
+  {
+    for (f = 1; f <= 7; f++)
+    {
+      if (timevary_MG(y, f) > 0 && Fcast_MGparm_ave(f,2) > 0)
+      {
+          warnstream << "mean MGparm for forecast is incompatible with timevary parm in forecast yr: " << y << "; for type: " << f << " " << MGtype_Lbl(f) << "; SS3 will disable time-vary";
+          write_message(WARN, 0);
+          timevary_MG(y, f) = 0;
+      }
+    }
+  }
+
   // clang-format off
  END_CALCS
 
@@ -2046,7 +2082,7 @@
           env_data_pass(1) = env_data_minyr(k);
           env_data_pass(2) = env_data_maxyr(k);
         }
-        else //  density-dependence
+        else if (abs(SR_parm_1(j, 8) > 0)) //  density-dependence
         {
           timevary_setup(7) = -int(abs(SR_parm_1(j, 8)) - k * 100);
           do_densitydependent = 1;
@@ -2231,12 +2267,12 @@
   echoinput << Fcast_recr_lambda << " #_lambda for Fcast_recr_like occurring before endyr+1" << endl;
   if (Fcast_Loop_Control(3) >= 3 && Fcast_recr_PH_rd >= 0)
   {
-    warnstream << "Mean recruitment for forecast is incompatible with pos. phase for forecast rec_devs; set phase to neg. unless using late rec_devs";
-    write_message (WARN, 0);
+    warnstream << "Forecast devs will be applied to mean base recruitment over range of historical years in forecast.ss";
+    write_message (NOTE, 0);
   }
   if (Do_Impl_Error > 0 && Fcast_recr_PH_rd < 0)
   {
-    warnstream << "Implementation error incompatible with neg. phase for forecast rec_devs; SS3 will run without active impl error";
+    warnstream << "Implementation error has null effect unless Fcast_recr_PH is >=0";
     write_message (WARN, 0);
   }
   echoinput << recdev_adj(1) << " #_last_early_yr_nobias_adj_in_MPD" << endl;
@@ -2268,6 +2304,12 @@
     warnstream << " recdev_end: " << recdev_end << " > retro_yr: " << retro_yr << " reset ";
     write_message (ADJUST, 0);
     recdev_end = retro_yr;
+  }
+  if (recdev_end < endyr && (Fcast_Loop_Control(3) == 3 || Fcast_Loop_Control(3) == 4))
+  {
+    warnstream << "Fcast recr option is 3 or 4 and recdev_end: " << recdev_end << " < endyr: " << endyr << " reset ";
+    write_message (ADJUST, 0);
+    recdev_end = endyr;
   }
   if (recdev_start < (styr - nages))
   {
@@ -2372,6 +2414,21 @@
         ParmLabel += "Impl_err_" + onenum + CRLF(1);
       }
     }
+
+    // check recdev start and end against survey year start and end
+    for (f = 1; f <=Nfleet; f++) {
+      if (Svy_units(f) == 31 || Svy_units(f) == 32 || Svy_units(f) == 33 || Svy_units(f) == 36) { //  select just recruitment surveys
+        if (Svy_styr(f) < recdev_first) {
+          warnstream << "Recruitment survey: " << f << " has data in: " << Svy_styr(f) << ", which is before first early recdev: " << recdev_first << ". Suggest start recdevs earlier";
+          write_message (SUGGEST, 0);
+        }
+        if (Svy_endyr(f) > recdev_end && Fcast_recr_PH_rd <=0 ) {
+          warnstream << "Recruitment survey: " << f << " has data in: " << Svy_endyr(f) << ", which is after last main recdev: " << recdev_end << ". Suggest extend recdev_end, or use pos. phase for fore_recruitments: " << Fcast_recr_PH_rd;
+          write_message (SUGGEST, 0);
+        }
+      }
+    }
+
   }
   
   biasadj_full.initialize();
@@ -3068,7 +3125,7 @@
           env_data_pass(1) = env_data_minyr(k);
           env_data_pass(2) = env_data_maxyr(k);
         }
-        else //  density-dependence
+        else if (abs(Q_parm_1(j, 8) > 0)) //  density-dependence
         {
           timevary_setup(7) = -int(abs(Q_parm_1(j, 8)) - k * 100);
           do_densitydependent = 1;
@@ -4326,14 +4383,13 @@
         env_data_pass(1) = env_data_minyr(k);
         env_data_pass(2) = env_data_maxyr(k);
       }
-      else //  density-dependence
+        else if (abs(selparm_1(j, 8) > 0)) //  density-dependence
       {
         timevary_setup(7) = -int(abs(selparm_1(j, 8)) - k * 100);
         do_densitydependent = 1;
         k = 0;
         env_data_pass.initialize();
       }
-
       if (z > 0) //  doing blocks
       {
         if (z > N_Block_Designs)
@@ -4353,6 +4409,11 @@
       } // year vector for this category
     }
   }
+    if (do_densitydependent == 1 && Fcast_timevary_Selex == 1) {
+      warnstream << "Fcast_timevary_Selex is 1 (do averages); user should change to 0 (timevary) because density dependence affects a selectivity parameter or growth "<<endl;
+      write_message(WARN, 0);
+    }
+
   
   timevary_setup.initialize();
   timevary_setup(3) = timevary_parm_cnt + 1; //  one past last one used
@@ -4378,7 +4439,7 @@
   
   if (TwoD_AR_do > 0)
   {
-    warnstream << "The experimental 2D_AR selectivity smoother option is selected!";
+    warnstream << "2D_AR selectivity deviations option is selected!";
       //  elements 1-11 are read from control.ss;  12 and 13 are calculated internally
       //  1-fleet, 2-ymin, 3-ymax, 4-amin, 5-amax, 6-sigma_amax, 7-use_rho, 8-age/len, 9-dev_phase
       //  10-before yr range, 11=after yr range, 12-N_parm_dev,  13-selparm_location
@@ -4387,7 +4448,7 @@
     tempvec.initialize();
     TwoD_AR_def.push_back(tempvec); //  bypass that pesky zeroth row
     TwoD_AR_def_rd.push_back(tempvec); //  bypass that pesky zeroth row
-    echoinput << "read specification for first 2D_AR1:  fleet, ymin, ymax, amin, amax, sigma_amax, use_rho, len1/age2, before, after" << endl;
+    echoinput << "read specification for first 2D_AR1:  fleet, ymin, ymax, amin, amax, sigma_amax, use_rho, len1/age2, phase before, after" << endl;
     ender = 0;
     do
     {
@@ -4840,10 +4901,10 @@
           picker -= 20;
           timevary_setup(14) = 1; //  flag to continue last dev through to YrMax
           timevary_def[j](14) = 1; //  save in array also
-          echoinput << j << " setting flag to continue last dev " << Fcast_Specify_Selex << " " << firstselparm << " " << f << " " << firstselparm + N_selparm << " " << endl;
-          if (Fcast_Specify_Selex == 0 && f >= firstselparm && f <= (firstselparm + N_selparm))
+          echoinput << j << " setting flag to continue last dev " << Fcast_timevary_Selex << " " << firstselparm << " " << f << " " << firstselparm + N_selparm << " " << endl;
+          if (Fcast_timevary_Selex == 1 && f >= firstselparm && f <= (firstselparm + N_selparm))
           {
-            warnstream << "for selectivity parmdevs, must change Fcast_Specify_Selex to 1 when using continue last dev";
+            warnstream << "for selectivity parmdevs, must change Fcast_timevary_Selex to 0 when using continue last dev";
             write_message (WARN, 1);
           }
         }
